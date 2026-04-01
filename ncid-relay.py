@@ -19,6 +19,7 @@ def parse_args():
     parser.add_argument('ncid_server')
     parser.add_argument('mqtt_server')
     parser.add_argument('mqtt_topic')
+    parser.add_argument('mqtt_topic2')
     parser.add_argument('--mqtt_auth', type=str, default=None)
     return parser.parse_args()
 
@@ -47,7 +48,7 @@ def info(client, topic, info_string):
 
 incoming_regex = re.compile(r'^[PC]ID: \*(.*)\*$')
 info_regex = re.compile(r'^[PC]IDINFO: \*(.*)\*$')
-def main(ncid_server, mqtt_server, mqtt_topic, mqtt_auth):
+def main(ncid_server, mqtt_server, mqtt_topic, mqtt_topic2, mqtt_auth):
     ncid_host, ncid_port = parse_optional(ncid_server, 3333, int)
     mqtt_host, mqtt_port = parse_optional(mqtt_server, 1883, int)
 
@@ -70,7 +71,7 @@ def main(ncid_server, mqtt_server, mqtt_topic, mqtt_auth):
                 if (match := incoming_regex.match(data)):
                   incoming_call(client, mqtt_topic, match.group(1))
                 if (match := info_regex.match(data)):
-                  info(client, mqtt_topic, match.group(1))
+                  info(client, mqtt_topic2, match.group(1))
         except Exception as E:
             raise E
         finally:
@@ -79,4 +80,4 @@ def main(ncid_server, mqtt_server, mqtt_topic, mqtt_auth):
 
 if __name__ == "__main__":
     args = parse_args()
-    main(args.ncid_server, args.mqtt_server, args.mqtt_topic, args.mqtt_auth)
+    main(args.ncid_server, args.mqtt_server, args.mqtt_topic, args.mqtt_topic2, args.mqtt_auth)
